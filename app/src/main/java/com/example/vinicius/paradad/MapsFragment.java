@@ -1,8 +1,13 @@
 package com.example.vinicius.paradad;
 
-import android.support.v4.app.FragmentActivity;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -10,9 +15,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback {
+public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback,
+        LocationListener {
 
     private GoogleMap mMap;
+    private Location currentPosition;
+    private MarkerOptions markerCurrentPosition;
+    private LocationManager locationManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,15 +44,39 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         mMap = googleMap;
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.setMyLocationEnabled(true);
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        //locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 0, 0, this);
 
-        MarkerOptions marker= new MarkerOptions();
-        marker.position(sydney);
-        marker.title("Marker in Sydney");
+        currentPosition = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
 
-        mMap.addMarker(marker);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        double currentLat = currentPosition.getLatitude();
+        double currentLng = currentPosition.getLongitude();
+
+        LatLng currentCoordinates = new LatLng(currentLat, currentLng);
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentCoordinates, 16);
+        mMap.moveCamera(cameraUpdate);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
     }
 }
