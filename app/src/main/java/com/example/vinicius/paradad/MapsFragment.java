@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback,
-        LocationListener {
+        GoogleMap.OnMapClickListener, LocationListener {
 
     private GoogleMap mMap;
     private Location currentPosition;
@@ -45,6 +45,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setMyLocationEnabled(true);
+        mMap.setOnMapClickListener(this);
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         //locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 0, 0, this);
@@ -58,6 +59,22 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentCoordinates, 16);
         mMap.moveCamera(cameraUpdate);
+
+    }
+
+    @Override
+    public void onMapClick(LatLng clickedPoint) {
+
+        double latitude = clickedPoint.latitude;
+        double longitude = clickedPoint.longitude;
+
+        String latitudeString = String.valueOf(latitude);
+        String longitudeString = String.valueOf(longitude);
+
+        String message =  "Latitude: " + latitudeString + " / Longitude: " +
+                        longitudeString;
+
+        Toast.makeText(getActivity(),  message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
