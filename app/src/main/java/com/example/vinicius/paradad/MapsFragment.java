@@ -15,6 +15,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.List;
+
 public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener, LocationListener {
 
@@ -64,6 +66,12 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
     @Override
     public void onMapClick(LatLng clickedPoint) {
+        /*
+        HttpRequest paradas= new HttpRequest();
+
+        List<ParadaPlace> paradaPlaces= paradas.carregarParada(clickedPoint);
+        */
+
 
         double latitude = clickedPoint.latitude;
         double longitude = clickedPoint.longitude;
@@ -72,9 +80,11 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         String longitudeString = String.valueOf(longitude);
 
         String message =  "Latitude: " + latitudeString + " / Longitude: " +
-                        longitudeString;
+                longitudeString;
 
         Toast.makeText(getActivity(),  message, Toast.LENGTH_SHORT).show();
+
+
     }
 
     @Override
