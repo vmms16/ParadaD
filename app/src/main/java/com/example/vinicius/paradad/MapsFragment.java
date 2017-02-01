@@ -66,12 +66,6 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
     @Override
     public void onMapClick(LatLng clickedPoint) {
-        /*
-        HttpRequest paradas= new HttpRequest();
-
-        List<ParadaPlace> paradaPlaces= paradas.carregarParada(clickedPoint);
-        */
-
 
         double latitude = clickedPoint.latitude;
         double longitude = clickedPoint.longitude;
