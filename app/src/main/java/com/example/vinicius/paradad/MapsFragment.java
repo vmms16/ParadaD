@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 
 public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback,
@@ -73,13 +75,22 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         String latitudeString = String.valueOf(latitude);
         String longitudeString = String.valueOf(longitude);
 
-        String message =  "Latitude: " + latitudeString + " / Longitude: " +
+        String url_parada_json =
+                "https://maps.googleapis.com/maps/api/place/radarsearch/json?location="
+                        +latitudeString+","+longitudeString+
+                        "&radius=50&types=bus_station&key=AIzaSyBNaYNpbJWoW5CmK4jYhUDHGdWfAlwLf2o";
+        new DownloadJSON().execute(url_parada_json);
+
+    }
+
+        /*
+
+       String message =  "Latitude: " + latitudeString + " / Longitude: " +
                 longitudeString;
 
         Toast.makeText(getActivity(),  message, Toast.LENGTH_SHORT).show();
 
-
-    }
+        */
 
     @Override
     public void onLocationChanged(Location location) {
@@ -98,6 +109,12 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
     @Override
     public void onProviderDisabled(String s) {
+
+    }
+
+    public static void imprimeId(String id){
+
+        String idParada = id;
 
     }
 }

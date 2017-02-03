@@ -5,7 +5,6 @@ package com.example.vinicius.paradad;
  */
 
 public class ParadaPlace {
-    private String icon;
     private String id;
     private String name;
     private String place_id;
@@ -34,11 +33,5 @@ public class ParadaPlace {
         this.place_id = place_id;
     }
 
-    public String getIcon() {
-        return icon;
-    }
 
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
 }
