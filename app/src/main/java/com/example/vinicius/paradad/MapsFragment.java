@@ -16,7 +16,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback,
@@ -77,9 +84,11 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
         String url_parada_json =
                 "https://maps.googleapis.com/maps/api/place/radarsearch/json?location="
-                        +latitudeString+","+longitudeString+
+                        + latitudeString + "," + longitudeString +
                         "&radius=50&types=bus_station&key=AIzaSyBNaYNpbJWoW5CmK4jYhUDHGdWfAlwLf2o";
+
         new DownloadJSON().execute(url_parada_json);
+
 
     }
 
@@ -112,9 +121,88 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
     }
 
-    public static void imprimeId(String id){
+    public static void imprimeId(String id) {
 
         String idParada = id;
+
+    }
+
+    public class DownloadJSON extends AsyncTask<String, Void, JSONObject> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected JSONObject doInBackground(String... params) {
+
+            String urlString = params[0];
+
+            final int SEGUNDOS = 1000;
+
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection conexao = (HttpURLConnection) url.openConnection();
+                conexao.setReadTimeout(10 * SEGUNDOS);
+                conexao.setConnectTimeout(15 * SEGUNDOS);
+                conexao.setRequestMethod("GET");
+                conexao.setDoInput(true);
+                conexao.setDoOutput(false);
+                conexao.connect();
+
+                int resposta = conexao.getResponseCode();
+
+                JSONObject json = null;
+
+                if (resposta == HttpURLConnection.HTTP_OK) {
+                    InputStream is = conexao.getInputStream();
+                    json = new JSONObject(bytesParaString(is));
+                }
+
+                return json;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(JSONObject json) {
+
+            try {
+                JSONArray jsonParadas = json.getJSONArray("results");
+                String parada = "Não é parada";
+
+                if (jsonParadas.length() > 0) {
+                    parada = "É parada";
+                }
+
+                Toast.makeText(getActivity(), parada, Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+        private String bytesParaString(InputStream is) throws IOException {
+            byte[] buffer = new byte[1024];
+
+            ByteArrayOutputStream bufferzao = new ByteArrayOutputStream();
+
+            int bytesLidos;
+
+            while ((bytesLidos = is.read(buffer)) != -1) {
+                bufferzao.write(buffer, 0, bytesLidos);
+            }
+
+            return new String(bufferzao.toByteArray(), "UTF-8");
+        }
+
 
     }
 }
