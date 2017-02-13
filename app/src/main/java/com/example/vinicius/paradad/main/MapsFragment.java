@@ -1,11 +1,13 @@
-package com.example.vinicius.paradad;
+package com.example.vinicius.paradad.main;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -33,6 +35,8 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     private Location currentPosition;
     private MarkerOptions markerCurrentPosition;
     private LocationManager locationManager;
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,6 +92,8 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
                         "&radius=50&types=bus_station&key=AIzaSyBNaYNpbJWoW5CmK4jYhUDHGdWfAlwLf2o";
 
         new DownloadJSON().execute(url_parada_json);
+
+
 
 
     }
@@ -179,6 +185,10 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
                 if (jsonParadas.length() > 0) {
                     parada = "É parada";
+
+
+
+
                 }
 
                 Toast.makeText(getActivity(), parada, Toast.LENGTH_SHORT).show();

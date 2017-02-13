@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">ParadaD</string>
     <string name="title_activity_maps">Map</string>
+    <string name="parada_confirmacao">Esta é a sua parada?</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
