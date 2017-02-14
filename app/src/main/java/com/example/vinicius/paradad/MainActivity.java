@@ -1,4 +1,4 @@
-package com.example.vinicius.paradad.main;
+package com.example.vinicius.paradad;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.vinicius.paradad.R;
+import com.example.vinicius.paradad.main.MapsFragment;
 
 public class MainActivity extends AppCompatActivity {
 

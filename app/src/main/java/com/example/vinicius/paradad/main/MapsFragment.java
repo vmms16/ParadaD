@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
 
+import com.example.vinicius.paradad.notificacoes.ConfirmacaoDialogFragment;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,7 +32,7 @@ import java.util.List;
 public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener, LocationListener {
 
-    private GoogleMap mMap;
+    public static GoogleMap mMap;
     private Location currentPosition;
     private MarkerOptions markerCurrentPosition;
     private LocationManager locationManager;
@@ -127,11 +128,6 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
     }
 
-    public static void imprimeId(String id) {
-
-        String idParada = id;
-
-    }
 
     public class DownloadJSON extends AsyncTask<String, Void, JSONObject> {
 
@@ -184,14 +180,14 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
                 String parada = "Não é parada";
 
                 if (jsonParadas.length() > 0) {
-                    parada = "É parada";
-
-
+               //     parada = "É parada";
+                    ConfirmacaoDialogFragment dialog= new ConfirmacaoDialogFragment();
+                    dialog.show(getFragmentManager(),"Aki");
 
 
                 }
 
-                Toast.makeText(getActivity(), parada, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getActivity(), parada, Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
             }
