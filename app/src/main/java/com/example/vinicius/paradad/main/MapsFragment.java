@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
 
 import com.example.vinicius.paradad.notificacoes.ConfirmacaoDialogFragment;
+import com.google.android.gms.drive.realtime.internal.event.ObjectChangedDetails;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback,
@@ -84,15 +86,15 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         double latitude = clickedPoint.latitude;
         double longitude = clickedPoint.longitude;
 
-        String latitudeString = String.valueOf(latitude);
+        /*String latitudeString = String.valueOf(latitude);
         String longitudeString = String.valueOf(longitude);
 
         String url_parada_json =
                 "https://maps.googleapis.com/maps/api/place/radarsearch/json?location="
                         + latitudeString + "," + longitudeString +
                         "&radius=50&types=bus_station&key=AIzaSyBNaYNpbJWoW5CmK4jYhUDHGdWfAlwLf2o";
-
-        new DownloadJSON().execute(url_parada_json);
+*/
+        new DownloadJSON().execute(clickedPoint);
 
 
 
@@ -129,7 +131,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     }
 
 
-    public class DownloadJSON extends AsyncTask<String, Void, JSONObject> {
+    public class DownloadJSON extends AsyncTask<LatLng, Void, List<Object>> {
 
         @Override
         protected void onPreExecute() {
@@ -137,14 +139,26 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         }
 
         @Override
-        protected JSONObject doInBackground(String... params) {
+        protected List<Object> doInBackground(LatLng... params) {
 
-            String urlString = params[0];
+            LatLng latLng = params[0];
+
+            double latitude = latLng.latitude;
+            double longitude = latLng.longitude;
+
+            String latitudeString = String.valueOf(latitude);
+            String longitudeString = String.valueOf(longitude);
+
+            String url_parada_json =
+                    "https://maps.googleapis.com/maps/api/place/radarsearch/json?location="
+                            + latitudeString + "," + longitudeString +
+                            "&radius=50&types=bus_station&key=AIzaSyBNaYNpbJWoW5CmK4jYhUDHGdWfAlwLf2o";
+
 
             final int SEGUNDOS = 1000;
 
             try {
-                URL url = new URL(urlString);
+                URL url = new URL(url_parada_json);
                 HttpURLConnection conexao = (HttpURLConnection) url.openConnection();
                 conexao.setReadTimeout(10 * SEGUNDOS);
                 conexao.setConnectTimeout(15 * SEGUNDOS);
@@ -162,7 +176,11 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
                     json = new JSONObject(bytesParaString(is));
                 }
 
-                return json;
+                List<Object> result= new ArrayList<Object>();
+                result.add(latLng);
+                result.add(json);
+
+                return result;
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -173,7 +191,11 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
 
         @Override
-        protected void onPostExecute(JSONObject json) {
+        protected void onPostExecute(List<Object> result) {
+
+            LatLng latLng= (LatLng) result.get(0);
+            JSONObject json= (JSONObject) result.get(1);
+
 
             try {
                 JSONArray jsonParadas = json.getJSONArray("results");
@@ -182,6 +204,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
                 if (jsonParadas.length() > 0) {
                //     parada = "É parada";
                     ConfirmacaoDialogFragment dialog= new ConfirmacaoDialogFragment();
+                    dialog.setLatLng(latLng);
                     dialog.show(getFragmentManager(),"Aki");
 
 
