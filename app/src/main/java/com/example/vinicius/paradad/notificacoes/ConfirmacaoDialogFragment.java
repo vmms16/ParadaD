@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class ConfirmacaoDialogFragment extends DialogFragment{
 
     private LatLng latLng;
+    private int x;
 
     public void setLatLng(LatLng latLng){
         this.latLng= latLng;
