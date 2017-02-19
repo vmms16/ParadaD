@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
 
+import com.example.vinicius.paradad.Parada;
+import com.example.vinicius.paradad.Sessao;
+import com.example.vinicius.paradad.json.HttpRequest;
 import com.example.vinicius.paradad.notificacoes.ConfirmacaoDialogFragment;
 import com.google.android.gms.drive.realtime.internal.event.ObjectChangedDetails;
 import com.google.android.gms.maps.CameraUpdate;
@@ -35,6 +38,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         GoogleMap.OnMapClickListener, LocationListener {
 
     public static GoogleMap mMap;
+    private Sessao sessao= Sessao.getInstancia();
     private Location currentPosition;
     private MarkerOptions markerCurrentPosition;
     private LocationManager locationManager;
@@ -131,7 +135,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     }
 
 
-    public class DownloadJSON extends AsyncTask<LatLng, Void, List<Object>> {
+    public class DownloadJSON extends AsyncTask<LatLng, Void, JSONObject> {
 
         @Override
         protected void onPreExecute() {
@@ -139,78 +143,40 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         }
 
         @Override
-        protected List<Object> doInBackground(LatLng... params) {
+        protected JSONObject doInBackground(LatLng... params) {
 
-            LatLng latLng = params[0];
-
-            double latitude = latLng.latitude;
-            double longitude = latLng.longitude;
-
-            String latitudeString = String.valueOf(latitude);
-            String longitudeString = String.valueOf(longitude);
-
-            String url_parada_json =
-                    "https://maps.googleapis.com/maps/api/place/radarsearch/json?location="
-                            + latitudeString + "," + longitudeString +
-                            "&radius=50&types=bus_station&key=AIzaSyBNaYNpbJWoW5CmK4jYhUDHGdWfAlwLf2o";
+            return HttpRequest.jsonDownaload(params[0]);
 
 
-            final int SEGUNDOS = 1000;
-
-            try {
-                URL url = new URL(url_parada_json);
-                HttpURLConnection conexao = (HttpURLConnection) url.openConnection();
-                conexao.setReadTimeout(10 * SEGUNDOS);
-                conexao.setConnectTimeout(15 * SEGUNDOS);
-                conexao.setRequestMethod("GET");
-                conexao.setDoInput(true);
-                conexao.setDoOutput(false);
-                conexao.connect();
-
-                int resposta = conexao.getResponseCode();
-
-                JSONObject json = null;
-
-                if (resposta == HttpURLConnection.HTTP_OK) {
-                    InputStream is = conexao.getInputStream();
-                    json = new JSONObject(bytesParaString(is));
-                }
-
-                List<Object> result= new ArrayList<Object>();
-                result.add(latLng);
-                result.add(json);
-
-                return result;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return null;
         }
 
 
         @Override
-        protected void onPostExecute(List<Object> result) {
-
-            LatLng latLng= (LatLng) result.get(0);
-            JSONObject json= (JSONObject) result.get(1);
-
+        protected void onPostExecute(JSONObject json) {
 
             try {
                 JSONArray jsonParadas = json.getJSONArray("results");
+                List<Parada> listaDeParadas= HttpRequest.lerJson(json);
+                sessao.setParada(listaDeParadas);
+
                 String parada = "Não é parada";
 
-                if (jsonParadas.length() > 0) {
-               //     parada = "É parada";
+                if (listaDeParadas.size() > 0) {
                     ConfirmacaoDialogFragment dialog= new ConfirmacaoDialogFragment();
-                    dialog.setLatLng(latLng);
+                    dialog.show(getFragmentManager(),"tag_1");
+
+
+                 /*
+                    ConfirmacaoDialogFragment dialog= new ConfirmacaoDialogFragment();
+                    List<Parada> parada2 = HttpRequest.lerJson(json);
+                    Parada x= parada2.get(0);
+                    dialog.setLatLng(parada2.get(0).getLocation());
                     dialog.show(getFragmentManager(),"Aki");
-
-
+                    */
                 }
 
-               // Toast.makeText(getActivity(), parada, Toast.LENGTH_SHORT).show();
+
+                //Toast.makeText(getActivity(), parada, Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -7,10 +7,17 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
 
+import com.example.vinicius.paradad.Parada;
+import com.example.vinicius.paradad.Sessao;
+import com.example.vinicius.paradad.json.HttpRequest;
 import com.example.vinicius.paradad.main.MapsFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONException;
+
+import java.util.List;
 
 /**
  * Created by Vinicius on 13/02/2017.
@@ -18,12 +25,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class ConfirmacaoDialogFragment extends DialogFragment{
 
-    private LatLng latLng;
-    private int x;
-
-    public void setLatLng(LatLng latLng){
-        this.latLng= latLng;
-    }
+    private Sessao sessao= Sessao.getInstancia();
 
 
     @Override
@@ -33,11 +35,9 @@ public class ConfirmacaoDialogFragment extends DialogFragment{
         builder.setMessage("Esta é a sua parada?")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-
                         MapsFragment.mMap.clear();
-
-                        MarkerOptions marker= new MarkerOptions();
-                        marker.position(latLng);
+                        MarkerOptions marker = new MarkerOptions();
+                        marker.position(sessao.getParada().get(0).getLocation());
                         MapsFragment.mMap.addMarker(marker);
                         Toast.makeText(getActivity(),"Parada selecionada",Toast.LENGTH_SHORT).show();
                     }
