@@ -21,10 +21,10 @@ import java.util.List;
 
 public class HttpRequest {
 
+    public static JSONObject jsonDownload(LatLng clickedPoint) {
 
-    public static JSONObject jsonDownaload(LatLng latLng){
-        double latitude = latLng.latitude;
-        double longitude = latLng.longitude;
+        double latitude = clickedPoint.latitude;
+        double longitude = clickedPoint.longitude;
 
         String latitudeString = String.valueOf(latitude);
         String longitudeString = String.valueOf(longitude);
@@ -34,11 +34,20 @@ public class HttpRequest {
                         + latitudeString + "," + longitudeString +
                         "&radius=50&types=bus_station&key=AIzaSyBNaYNpbJWoW5CmK4jYhUDHGdWfAlwLf2o";
 
+        HttpURLConnection connection = connect(url_parada_json);
+
+        JSONObject json = obterJSON(connection);
+
+        return json;
+
+    }
+
+    private static HttpURLConnection connect(String urlString) {
 
         final int SEGUNDOS = 1000;
 
         try {
-            URL url = new URL(url_parada_json);
+            URL url = new URL(urlString);
             HttpURLConnection conexao = (HttpURLConnection) url.openConnection();
             conexao.setReadTimeout(10 * SEGUNDOS);
             conexao.setConnectTimeout(15 * SEGUNDOS);
@@ -47,24 +56,32 @@ public class HttpRequest {
             conexao.setDoOutput(false);
             conexao.connect();
 
-            int resposta = conexao.getResponseCode();
-
-            JSONObject json = null;
-
-            if (resposta == HttpURLConnection.HTTP_OK) {
-                InputStream is = conexao.getInputStream();
-                json = new JSONObject(bytesParaString(is));
-            }
-
-            return json;
-
+            return conexao;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
+    }
 
+    private static JSONObject obterJSON(HttpURLConnection connection){
+
+        try {
+            int answer = connection.getResponseCode();
+
+            if (answer == HttpURLConnection.HTTP_OK) {
+                InputStream is = connection.getInputStream();
+                JSONObject json = new JSONObject(bytesParaString(is));
+
+                return json;
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private static String bytesParaString(InputStream is) throws IOException {
@@ -80,6 +97,10 @@ public class HttpRequest {
 
         return new String(bufferzao.toByteArray(), "UTF-8");
     }
+
+
+
+
 
     public static List<Parada> lerJson(JSONObject json) throws JSONException{
         List<Parada> listaDeParadas= new ArrayList<Parada>();

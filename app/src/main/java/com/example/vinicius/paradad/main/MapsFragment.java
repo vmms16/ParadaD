@@ -1,20 +1,18 @@
 package com.example.vinicius.paradad.main;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import android.os.Vibrator;
 import android.widget.Toast;
 
 import com.example.vinicius.paradad.Parada;
 import com.example.vinicius.paradad.Sessao;
 import com.example.vinicius.paradad.json.HttpRequest;
 import com.example.vinicius.paradad.notificacoes.ConfirmacaoDialogFragment;
-import com.google.android.gms.drive.realtime.internal.event.ObjectChangedDetails;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,22 +24,19 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener, LocationListener {
 
     public static GoogleMap mMap;
+
     private Sessao sessao= Sessao.getInstancia();
     private Location currentPosition;
     private MarkerOptions markerCurrentPosition;
+    //private MarkerOptions
     private LocationManager locationManager;
+
 
 
 
@@ -87,32 +82,13 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     @Override
     public void onMapClick(LatLng clickedPoint) {
 
-        double latitude = clickedPoint.latitude;
-        double longitude = clickedPoint.longitude;
+        /* Vibrator vb = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        vb.vibrate(4000); */
 
-        /*String latitudeString = String.valueOf(latitude);
-        String longitudeString = String.valueOf(longitude);
-
-        String url_parada_json =
-                "https://maps.googleapis.com/maps/api/place/radarsearch/json?location="
-                        + latitudeString + "," + longitudeString +
-                        "&radius=50&types=bus_station&key=AIzaSyBNaYNpbJWoW5CmK4jYhUDHGdWfAlwLf2o";
-*/
         new DownloadJSON().execute(clickedPoint);
-
-
-
 
     }
 
-        /*
-
-       String message =  "Latitude: " + latitudeString + " / Longitude: " +
-                longitudeString;
-
-        Toast.makeText(getActivity(),  message, Toast.LENGTH_SHORT).show();
-
-        */
 
     @Override
     public void onLocationChanged(Location location) {
@@ -145,8 +121,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         @Override
         protected JSONObject doInBackground(LatLng... params) {
 
-            return HttpRequest.jsonDownaload(params[0]);
-
+            return HttpRequest.jsonDownload(params[0]);
 
         }
 
@@ -156,26 +131,18 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
             try {
                 JSONArray jsonParadas = json.getJSONArray("results");
-                List<Parada> listaDeParadas= HttpRequest.lerJson(json);
-                sessao.setParada(listaDeParadas);
+                if (json != null) {
+                    List<Parada> listaDeParadas = HttpRequest.lerJson(json);
+                    sessao.setParada(listaDeParadas);
 
-                String parada = "Não é parada";
+                    String parada = "Não é parada";
 
-                if (listaDeParadas.size() > 0) {
-                    ConfirmacaoDialogFragment dialog= new ConfirmacaoDialogFragment();
-                    dialog.show(getFragmentManager(),"tag_1");
+                    if (listaDeParadas.size() > 0) {
+                        ConfirmacaoDialogFragment dialog = new ConfirmacaoDialogFragment();
+                        dialog.show(getFragmentManager(), "tag_1");
 
-
-                 /*
-                    ConfirmacaoDialogFragment dialog= new ConfirmacaoDialogFragment();
-                    List<Parada> parada2 = HttpRequest.lerJson(json);
-                    Parada x= parada2.get(0);
-                    dialog.setLatLng(parada2.get(0).getLocation());
-                    dialog.show(getFragmentManager(),"Aki");
-                    */
+                    }
                 }
-
-
                 //Toast.makeText(getActivity(), parada, Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -183,21 +150,6 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
 
         }
-
-        private String bytesParaString(InputStream is) throws IOException {
-            byte[] buffer = new byte[1024];
-
-            ByteArrayOutputStream bufferzao = new ByteArrayOutputStream();
-
-            int bytesLidos;
-
-            while ((bytesLidos = is.read(buffer)) != -1) {
-                bufferzao.write(buffer, 0, bytesLidos);
-            }
-
-            return new String(bufferzao.toByteArray(), "UTF-8");
-        }
-
 
     }
 }
