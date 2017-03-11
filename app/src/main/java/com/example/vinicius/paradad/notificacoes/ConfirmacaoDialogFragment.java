@@ -38,7 +38,7 @@ public class ConfirmacaoDialogFragment extends DialogFragment{
                     public void onClick(DialogInterface dialog, int id) {
                         MapsFragment.mMap.clear();
                         MarkerOptions marker = new MarkerOptions();
-                        marker.position(sessao.getParadas().get(0).getLocation());
+                        marker.position(sessao.getParada().getLocation());
                         MapsFragment.mMap.addMarker(marker);
                         Toast.makeText(getActivity(),"Parada selecionada",Toast.LENGTH_SHORT).show();
                     }

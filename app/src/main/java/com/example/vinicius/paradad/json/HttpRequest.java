@@ -1,6 +1,7 @@
 package com.example.vinicius.paradad.json;
 
 import com.example.vinicius.paradad.Parada;
+import com.example.vinicius.paradad.Sessao;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -20,6 +21,8 @@ import java.util.List;
  */
 
 public class HttpRequest {
+
+
 
     public static JSONObject jsonDownload(LatLng clickedPoint) {
 
@@ -98,33 +101,26 @@ public class HttpRequest {
         return new String(bufferzao.toByteArray(), "UTF-8");
     }
 
-    public static List<Parada> lerJson(JSONObject json) throws JSONException{
-        List<Parada> listaDeParadas= new ArrayList<Parada>();
+    public static Parada lerJson(JSONObject json) throws JSONException{
 
-        String result="result";
 
         JSONArray jsonParadas= json.getJSONArray("results");
-        for (int i=0; i<jsonParadas.length(); i++){
-            JSONObject json_parada= jsonParadas.getJSONObject(i);
 
-            Parada parada= new Parada();
-            parada.setId(json_parada.getString("id"));
-            parada.setPlace_id(json_parada.getString("place_id"));
-            parada.setReference((json_parada.getString("reference")));
+        JSONObject json_parada= jsonParadas.getJSONObject(0);
 
-            JSONObject geometry= json_parada.getJSONObject("geometry");
-            JSONObject location= geometry.getJSONObject("location");
+        Parada parada= new Parada();
 
-            double latitude= location.getDouble("lat");
-            double longitude= location.getDouble("lng");
+        JSONObject geometry= json_parada.getJSONObject("geometry");
+        JSONObject location= geometry.getJSONObject("location");
 
-            parada.setLocation( new LatLng(latitude,longitude));
+        double latitude= location.getDouble("lat");
+        double longitude= location.getDouble("lng");
 
-            listaDeParadas.add(parada);
+        parada.setLocation( new LatLng(latitude,longitude));
 
-        }
 
-        return  listaDeParadas;
+
+        return  parada;
     }
 
 
@@ -134,8 +130,17 @@ public class HttpRequest {
 
     public static int obterDistancia(LatLng origin) {
 
-        double latitudeDestino = -8.01593;
-        double longitudeDestino = -34.9455997 ;
+        Sessao sessao= Sessao.getInstancia();
+
+
+        double latitudeDestino = -7.5606;
+        double longitudeDestino = -35.0010987;
+
+
+/*
+        double latitudeDestino = sessao.getParada().getLocation().latitude;
+        double longitudeDestino = sessao.getParada().getLocation().longitude;
+*/
 
         double latitudeOrigem = origin.latitude;
         double longitudeOrigem = origin.longitude;

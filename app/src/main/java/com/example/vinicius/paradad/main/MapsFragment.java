@@ -31,13 +31,11 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
     public static GoogleMap mMap;
 
-    private Sessao sessao= Sessao.getInstancia();
+    private Sessao sessao = Sessao.getInstancia();
     private Location currentPosition;
     private MarkerOptions markerCurrentPosition;
     //private MarkerOptions
     private LocationManager locationManager;
-
-
 
 
     @Override
@@ -93,14 +91,16 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     @Override
     public void onLocationChanged(Location location) {
 
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
+        //if (sessao.getParada() != null) {
 
-        LatLng coordinates = new LatLng(latitude, longitude);
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
+
+            LatLng coordinates = new LatLng(latitude, longitude);
 
 
-        new  DownloadJSONDistance().execute(coordinates);
-
+            new DownloadJSONDistance().execute(coordinates);
+        //}
 
     }
 
@@ -141,16 +141,14 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
             try {
                 JSONArray jsonParadas = json.getJSONArray("results");
                 if (json != null) {
-                    List<Parada> listaDeParadas = HttpRequest.lerJson(json);
-                    sessao.setParadas(listaDeParadas);
+                    Parada parada = HttpRequest.lerJson(json);
+                    sessao.setParada(parada);
 
-                    String parada = "Não é parada";
 
-                    if (listaDeParadas.size() > 0) {
-                        ConfirmacaoDialogFragment dialog = new ConfirmacaoDialogFragment();
-                        dialog.show(getFragmentManager(), "tag_1");
+                    ConfirmacaoDialogFragment dialog = new ConfirmacaoDialogFragment();
+                    dialog.show(getFragmentManager(), "tag_1");
 
-                    }
+
                 }
                 //Toast.makeText(getActivity(), parada, Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
@@ -161,7 +159,6 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         }
 
     }
-
 
 
     public class DownloadJSONDistance extends AsyncTask<LatLng, Void, Integer> {
@@ -182,12 +179,15 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         @Override
         protected void onPostExecute(Integer distancia) {
 
-            //Toast.makeText(getActivity(),"Distancia: "+String.valueOf(distancia),Toast.LENGTH_SHORT).show();
+
+            if (distancia < 1000) {
+                Toast.makeText(getActivity(), "Ta perto" , Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(getActivity(), "Distancia: " + String.valueOf(distancia), Toast.LENGTH_SHORT).show();
+            }
 
         }
 
+
     }
-
-
-
 }

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Sessao {
     private static Sessao instancia= new Sessao();
-    private List<Parada> paradas;
+    private Parada parada;
 
     private Sessao(){
 
@@ -23,12 +23,12 @@ public class Sessao {
     }
 
 
-    public List<Parada> getParadas() {
-        return paradas;
+    public Parada getParada() {
+        return parada;
     }
 
-    public void setParadas(List<Parada> paradas) {
-        this.paradas = paradas;
+    public void setParada(Parada parada) {
+        this.parada = parada;
     }
 
 }
