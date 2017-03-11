@@ -65,7 +65,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         mMap.setOnMapClickListener(this);
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        //locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 0, 0, this);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 0, 0, this);
 
         currentPosition = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
 
@@ -92,6 +92,15 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
     @Override
     public void onLocationChanged(Location location) {
+
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+
+        LatLng coordinates = new LatLng(latitude, longitude);
+
+
+        new  DownloadJSONDistance().execute(coordinates);
+
 
     }
 
@@ -133,7 +142,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
                 JSONArray jsonParadas = json.getJSONArray("results");
                 if (json != null) {
                     List<Parada> listaDeParadas = HttpRequest.lerJson(json);
-                    sessao.setParada(listaDeParadas);
+                    sessao.setParadas(listaDeParadas);
 
                     String parada = "Não é parada";
 
@@ -152,4 +161,33 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         }
 
     }
+
+
+
+    public class DownloadJSONDistance extends AsyncTask<LatLng, Void, Integer> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Integer doInBackground(LatLng... params) {
+
+            return HttpRequest.obterDistancia(params[0]);
+
+        }
+
+
+        @Override
+        protected void onPostExecute(Integer distancia) {
+
+            //Toast.makeText(getActivity(),"Distancia: "+String.valueOf(distancia),Toast.LENGTH_SHORT).show();
+
+        }
+
+    }
+
+
+
 }

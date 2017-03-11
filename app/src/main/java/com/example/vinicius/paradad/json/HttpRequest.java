@@ -98,10 +98,6 @@ public class HttpRequest {
         return new String(bufferzao.toByteArray(), "UTF-8");
     }
 
-
-
-
-
     public static List<Parada> lerJson(JSONObject json) throws JSONException{
         List<Parada> listaDeParadas= new ArrayList<Parada>();
 
@@ -131,4 +127,69 @@ public class HttpRequest {
         return  listaDeParadas;
     }
 
+
+
+
+
+
+    public static int obterDistancia(LatLng origin) {
+
+        double latitudeDestino = -8.01593;
+        double longitudeDestino = -34.9455997 ;
+
+        double latitudeOrigem = origin.latitude;
+        double longitudeOrigem = origin.longitude;
+
+
+        String latDestinoString = String.valueOf(latitudeDestino);
+        String longDestinoString = String.valueOf(longitudeDestino);
+
+        String latOriString = String.valueOf(latitudeOrigem);
+        String longOriString = String.valueOf(longitudeOrigem);
+
+        String url_parada_json =
+                "https://maps.googleapis.com/maps/api/distancematrix/json?" +
+                        "origins="+latOriString+","+longOriString +
+                        "&destinations="+latDestinoString+","+longDestinoString+
+                        "&mode=bus&key=AIzaSyBNaYNpbJWoW5CmK4jYhUDHGdWfAlwLf2o";
+
+        HttpURLConnection connection = connect(url_parada_json);
+
+        JSONObject json = obterJSON(connection);
+
+
+        try {
+
+            return lerJsonDistancia(json);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return Integer.parseInt(null);
+
+    }
+
+
+    public  static int lerJsonDistancia (JSONObject json) throws  JSONException{
+
+
+
+        JSONArray jsonDistancias= json.getJSONArray("rows");
+
+
+        JSONObject json_distancia= jsonDistancias.getJSONObject(0);
+
+        JSONArray elements = json_distancia.getJSONArray("elements");
+        JSONObject valores= elements.getJSONObject(0);
+        JSONObject distance = valores.getJSONObject("distance");
+
+        int distancia= distance.getInt("value");
+
+        return distancia;
+
+
+
+
+    }
 }
