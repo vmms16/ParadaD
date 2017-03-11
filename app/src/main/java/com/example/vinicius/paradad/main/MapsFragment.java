@@ -13,6 +13,7 @@ import com.example.vinicius.paradad.Parada;
 import com.example.vinicius.paradad.Sessao;
 import com.example.vinicius.paradad.json.HttpRequest;
 import com.example.vinicius.paradad.notificacoes.ConfirmacaoDialogFragment;
+import com.example.vinicius.paradad.notificacoes.ConfirmacaoProximo;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,12 +31,13 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         GoogleMap.OnMapClickListener, LocationListener {
 
     public static GoogleMap mMap;
-
     private Sessao sessao = Sessao.getInstancia();
     private Location currentPosition;
     private MarkerOptions markerCurrentPosition;
     //private MarkerOptions
     private LocationManager locationManager;
+
+    public static Vibrator vb;
 
 
     @Override
@@ -62,8 +64,9 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         mMap.setMyLocationEnabled(true);
         mMap.setOnMapClickListener(this);
 
+
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 0, 0, this);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 10000, 0, this);
 
         currentPosition = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
 
@@ -181,6 +184,16 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
 
             if (distancia < 1000) {
+
+                vb= (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+                vb.vibrate(5000000);
+
+                ConfirmacaoProximo dialog = new ConfirmacaoProximo();
+                dialog.show(getFragmentManager(), "tag_2");
+
+
+
+
                 Toast.makeText(getActivity(), "Ta perto" , Toast.LENGTH_SHORT).show();
             }else{
                 Toast.makeText(getActivity(), "Distancia: " + String.valueOf(distancia), Toast.LENGTH_SHORT).show();
