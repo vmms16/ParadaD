@@ -7,7 +7,7 @@
         jumboMode="true"
         optimize="true"
         revision="24.0.3"
-        sha1="8b09881491b8f932d041029adc7147e943afd285">
+        sha1="ea1e1317db0a8c414ac4e8533998af3c7360b01f">
         <dex dex="C:\Users\Vinicius\AndroidStudioProjects\ParadaExemplo\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_f22c3659934c7f83d61ec89caf49005dbd17d958\classes.dex" />
     </item>
     <item
@@ -1177,7 +1177,7 @@
         jumboMode="true"
         optimize="true"
         revision="24.0.3"
-        sha1="c545e0383ba7af8a86a7cf9bde1a1dec3f8108ed">
+        sha1="bca89da0a8dc5b5018c5e3bfdd0a4a2064a73271">
         <dex dex="C:\Users\Vinicius\AndroidStudioProjects\ParadaExemplo\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_a6824700c4869857c3e6ae205e48eda9259945f9\classes.dex" />
     </item>
     <item

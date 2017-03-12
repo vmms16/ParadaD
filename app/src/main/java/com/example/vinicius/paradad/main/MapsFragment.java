@@ -12,8 +12,11 @@ import android.widget.Toast;
 import com.example.vinicius.paradad.Parada;
 import com.example.vinicius.paradad.Sessao;
 import com.example.vinicius.paradad.json.HttpRequest;
+import com.example.vinicius.paradad.notificacoes.ConfirmacaoChegou;
 import com.example.vinicius.paradad.notificacoes.ConfirmacaoDialogFragment;
+import com.example.vinicius.paradad.notificacoes.ConfirmacaoMuitoProximo;
 import com.example.vinicius.paradad.notificacoes.ConfirmacaoProximo;
+import com.example.vinicius.paradad.notificacoes.TipoNotificacao;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,8 +27,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.List;
 
 public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener, LocationListener {
@@ -38,6 +39,8 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     private LocationManager locationManager;
 
     public static Vibrator vb;
+
+    private TipoNotificacao tipo= TipoNotificacao.proximo;
 
 
     @Override
@@ -66,7 +69,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 10000, 0, this);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 0, 50, this);
 
         currentPosition = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
 
@@ -83,10 +86,9 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     @Override
     public void onMapClick(LatLng clickedPoint) {
 
-        /* Vibrator vb = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-        vb.vibrate(4000); */
 
         new DownloadJSON().execute(clickedPoint);
+
 
     }
 
@@ -182,21 +184,43 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         @Override
         protected void onPostExecute(Integer distancia) {
 
+            vb= (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
 
-            if (distancia < 1000) {
 
-                vb= (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+            if (distancia <=50 && tipo==TipoNotificacao.chegou ) {
+
                 vb.vibrate(5000000);
 
-                ConfirmacaoProximo dialog = new ConfirmacaoProximo();
-                dialog.show(getFragmentManager(), "tag_2");
+                ConfirmacaoChegou dialog = new ConfirmacaoChegou();
+                dialog.show(getFragmentManager(), "tag_chegou");
+
+                tipo=TipoNotificacao.proximo;
 
 
 
+            }else {
+                if (distancia<=150 && tipo== TipoNotificacao.muitoProximo) {
 
-                Toast.makeText(getActivity(), "Ta perto" , Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(getActivity(), "Distancia: " + String.valueOf(distancia), Toast.LENGTH_SHORT).show();
+                    vb.vibrate(5000000);
+
+                    ConfirmacaoMuitoProximo dialog = new ConfirmacaoMuitoProximo();
+                    dialog.show(getFragmentManager(), "tag_muito_proximo");
+
+                    tipo=TipoNotificacao.chegou;
+
+
+                }else if(distancia<=300 && tipo==TipoNotificacao.proximo){
+
+                    vb.vibrate(5000000);
+
+                    ConfirmacaoProximo dialog = new ConfirmacaoProximo();
+                    dialog.show(getFragmentManager(), "tag_proximo");
+
+
+                    tipo=TipoNotificacao.muitoProximo;
+
+
+                }
             }
 
         }
