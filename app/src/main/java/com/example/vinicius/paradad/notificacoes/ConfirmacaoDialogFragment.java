@@ -4,24 +4,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
-import android.R;
 
-import com.example.vinicius.paradad.Parada;
-import com.example.vinicius.paradad.Sessao;
-import com.example.vinicius.paradad.json.HttpRequest;
+import com.example.vinicius.paradad.main.Sessao;
 import com.example.vinicius.paradad.main.MapsFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.json.JSONException;
-
-import java.util.List;
 
 /**
  * Created by Vinicius on 13/02/2017.
@@ -44,11 +32,10 @@ public class ConfirmacaoDialogFragment extends DialogFragment{
 
                         MarkerOptions options = new MarkerOptions();
                         options.position(sessao.getParada().getLocation());
-//                        options.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_alarm));
+                        //options.icon(BitmapDescriptorFactory.fromResource(R.drawable.));
                         MapsFragment.mMap.addMarker(options);
                         MapsFragment.alarme = options;
                         MapsFragment.tipo = TipoNotificacao.proximo;
-
                         Toast.makeText(getActivity(),"Parada selecionada",Toast.LENGTH_SHORT).show();
                     }
                 })
