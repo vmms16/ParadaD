@@ -7,11 +7,14 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
+import android.R;
 
 import com.example.vinicius.paradad.Parada;
 import com.example.vinicius.paradad.Sessao;
 import com.example.vinicius.paradad.json.HttpRequest;
 import com.example.vinicius.paradad.main.MapsFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -36,10 +39,16 @@ public class ConfirmacaoDialogFragment extends DialogFragment{
         builder.setMessage("Esta é a sua parada?")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+
                         MapsFragment.mMap.clear();
-                        MarkerOptions marker = new MarkerOptions();
-                        marker.position(sessao.getParada().getLocation());
-                        MapsFragment.mMap.addMarker(marker);
+
+                        MarkerOptions options = new MarkerOptions();
+                        options.position(sessao.getParada().getLocation());
+//                        options.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_alarm));
+                        MapsFragment.mMap.addMarker(options);
+                        MapsFragment.alarme = options;
+                        MapsFragment.tipo = TipoNotificacao.proximo;
+
                         Toast.makeText(getActivity(),"Parada selecionada",Toast.LENGTH_SHORT).show();
                     }
                 })

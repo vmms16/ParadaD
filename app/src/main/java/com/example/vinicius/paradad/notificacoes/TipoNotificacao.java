@@ -6,7 +6,7 @@ package com.example.vinicius.paradad.notificacoes;
 
 public enum TipoNotificacao {
 
-    proximo(1), muitoProximo(2), chegou(3);
+    proximo(1), muitoProximo(2), chegou(3), nenhum(4);
 
     private final int valor;
 

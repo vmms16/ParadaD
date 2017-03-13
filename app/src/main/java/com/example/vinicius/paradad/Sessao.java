@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Sessao {
     private static Sessao instancia= new Sessao();
-    private Parada parada;
+    private Parada parada = null;
 
     private Sessao(){
 

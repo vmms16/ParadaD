@@ -2,7 +2,9 @@ package com.example.vinicius.paradad.json;
 
 import com.example.vinicius.paradad.Parada;
 import com.example.vinicius.paradad.Sessao;
+import com.example.vinicius.paradad.main.MapsFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -123,28 +125,15 @@ public class HttpRequest {
         return  parada;
     }
 
-
-
-
-
-
     public static int obterDistancia(LatLng origin) {
 
-        Sessao sessao= Sessao.getInstancia();
+        LatLng destinyPosition = MapsFragment.alarme.getPosition();
 
-
-        double latitudeDestino = -7.5606;
-        double longitudeDestino = -35.0010987;
-
-
-/*
-        double latitudeDestino = sessao.getParada().getLocation().latitude;
-        double longitudeDestino = sessao.getParada().getLocation().longitude;
-*/
+        double latitudeDestino = destinyPosition.latitude;
+        double longitudeDestino = destinyPosition.longitude;
 
         double latitudeOrigem = origin.latitude;
         double longitudeOrigem = origin.longitude;
-
 
         String latDestinoString = String.valueOf(latitudeDestino);
         String longDestinoString = String.valueOf(longitudeDestino);
@@ -174,7 +163,6 @@ public class HttpRequest {
         return Integer.parseInt(null);
 
     }
-
 
     public  static int lerJsonDistancia (JSONObject json) throws  JSONException{
 

@@ -23,6 +23,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -35,12 +36,12 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     private Sessao sessao = Sessao.getInstancia();
     private Location currentPosition;
     private MarkerOptions markerCurrentPosition;
-    //private MarkerOptions
+    public static MarkerOptions alarme;
     private LocationManager locationManager;
 
     public static Vibrator vb;
 
-    private TipoNotificacao tipo= TipoNotificacao.proximo;
+    public static TipoNotificacao tipo= TipoNotificacao.proximo;
 
 
     @Override
@@ -69,7 +70,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 0, 50, this);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 5000, 0, this);
 
         currentPosition = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
 
@@ -96,7 +97,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     @Override
     public void onLocationChanged(Location location) {
 
-        //if (sessao.getParada() != null) {
+        if (alarme != null) {
 
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
@@ -105,7 +106,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
 
             new DownloadJSONDistance().execute(coordinates);
-        //}
+        }
 
     }
 
@@ -144,8 +145,8 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         protected void onPostExecute(JSONObject json) {
 
             try {
-                JSONArray jsonParadas = json.getJSONArray("results");
                 if (json != null) {
+
                     Parada parada = HttpRequest.lerJson(json);
                     sessao.setParada(parada);
 
@@ -180,26 +181,27 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
         }
 
-
         @Override
         protected void onPostExecute(Integer distancia) {
+
+            Toast.makeText(getActivity(), "Distância: " + distancia, Toast.LENGTH_SHORT).show();
 
             vb= (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
 
 
-            if (distancia <=50 && tipo==TipoNotificacao.chegou ) {
+            if (distancia <=430 && tipo==TipoNotificacao.chegou) {
 
                 vb.vibrate(5000000);
 
                 ConfirmacaoChegou dialog = new ConfirmacaoChegou();
                 dialog.show(getFragmentManager(), "tag_chegou");
 
-                tipo=TipoNotificacao.proximo;
+                tipo=TipoNotificacao.nenhum;
 
 
 
             }else {
-                if (distancia<=150 && tipo== TipoNotificacao.muitoProximo) {
+                if (distancia<=470 && tipo== TipoNotificacao.muitoProximo) {
 
                     vb.vibrate(5000000);
 
@@ -209,7 +211,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
                     tipo=TipoNotificacao.chegou;
 
 
-                }else if(distancia<=300 && tipo==TipoNotificacao.proximo){
+                }else if(distancia<=500 && tipo==TipoNotificacao.proximo){
 
                     vb.vibrate(5000000);
 
