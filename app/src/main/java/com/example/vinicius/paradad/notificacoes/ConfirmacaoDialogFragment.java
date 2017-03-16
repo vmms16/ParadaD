@@ -31,7 +31,6 @@ public class ConfirmacaoDialogFragment extends DialogFragment{
 
     private Sessao sessao= Sessao.getInstancia();
 
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
         // Use the Builder class for convenient dialog construction
@@ -40,16 +39,9 @@ public class ConfirmacaoDialogFragment extends DialogFragment{
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
-                        MapsFragment.mMap.clear();
+                        MapsFragment.ativaAlarme();
 
-                        MarkerOptions options = new MarkerOptions();
-                        options.position(sessao.getParada().getLocation());
-//                        options.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_alarm));
-                        MapsFragment.mMap.addMarker(options);
-                        MapsFragment.alarme = options;
-                        MapsFragment.tipo = TipoNotificacao.proximo;
-
-                        Toast.makeText(getActivity(),"Parada selecionada",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"Alarme Ativado!",Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {

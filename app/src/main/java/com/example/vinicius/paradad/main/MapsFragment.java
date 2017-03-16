@@ -10,6 +10,7 @@ import android.os.Vibrator;
 import android.widget.Toast;
 
 import com.example.vinicius.paradad.Parada;
+import com.example.vinicius.paradad.R;
 import com.example.vinicius.paradad.Sessao;
 import com.example.vinicius.paradad.json.HttpRequest;
 import com.example.vinicius.paradad.notificacoes.ConfirmacaoChegou;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -33,7 +35,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         GoogleMap.OnMapClickListener, LocationListener {
 
     public static GoogleMap mMap;
-    private Sessao sessao = Sessao.getInstancia();
+    private static Sessao sessao = Sessao.getInstancia();
     private Location currentPosition;
     private MarkerOptions markerCurrentPosition;
     public static MarkerOptions alarme;
@@ -125,6 +127,20 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
     }
 
+    public static void ativaAlarme(){
+        mMap.clear();
+
+        MarkerOptions options = new MarkerOptions();
+
+        Parada paradaSelecionada = sessao.getParada();
+        LatLng posicao = paradaSelecionada.getLocation();
+        options.position(posicao);
+        options.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_alarm24));
+
+        mMap.addMarker(options);
+        alarme = options;
+        tipo = TipoNotificacao.proximo;
+    }
 
     public class DownloadJSON extends AsyncTask<LatLng, Void, JSONObject> {
 
@@ -149,7 +165,6 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
 
                     Parada parada = HttpRequest.lerJson(json);
                     sessao.setParada(parada);
-
 
                     ConfirmacaoDialogFragment dialog = new ConfirmacaoDialogFragment();
                     dialog.show(getFragmentManager(), "tag_1");

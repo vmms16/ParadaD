@@ -22,19 +22,19 @@
         android:textAlignment="center"
         android:layout_marginTop="40dp"
         android:textColor="@color/colorPrimary"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:fontFamily="Arial"
         android:textStyle="bold"
         />
 
-    <Button
+    <ImageButton
         android:id="@+id/confirmacao"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OK"
         android:layout_gravity="center"
         android:layout_marginTop="50dp"
+        android:src="@mipmap/ic_ok"
+        android:background="@null"
         />
-
 
 </LinearLayout>
