@@ -2,30 +2,22 @@ package com.example.vinicius.paradad.notificacoes;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v4.app.DialogFragment;
-import android.widget.Toast;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.CompoundButton;
 import android.R;
 
 import com.example.vinicius.paradad.Parada;
 import com.example.vinicius.paradad.Sessao;
-import com.example.vinicius.paradad.json.HttpRequest;
 import com.example.vinicius.paradad.main.MapsFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.json.JSONException;
-
-import java.util.List;
-
-/**
- * Created by Vinicius on 13/02/2017.
- */
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Switch;
+import android.widget.Toast;
 
 public class ConfirmacaoDialogFragment extends DialogFragment{
 
@@ -33,28 +25,46 @@ public class ConfirmacaoDialogFragment extends DialogFragment{
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
-        // Use the Builder class for convenient dialog construction
+
+        LayoutInflater li = getActivity().getLayoutInflater();
+
+        View title= li.inflate(com.example.vinicius.paradad.R.layout.activity_title,null);
+        View view = li.inflate(com.example.vinicius.paradad.R.layout.activity_ativacao, null);
+
+        final Switch statusAlarme = (Switch) view.findViewById(com.example.vinicius.paradad.R.id.switchAlarme);
+
+        statusAlarme.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked){
+                    MapsFragment.ativaAlarme();
+                    statusAlarme.setText("Alarme Ativado");
+                }else{
+                    MapsFragment.desativaAlarme();
+                    statusAlarme.setText("Alarme Desativado");
+                }
+
+            }
+        });
+
+        MarkerOptions alarme = MapsFragment.alarme;
+        Parada paradaSelecionada = sessao.getParada();
+
+        if(alarme != null){
+
+            LatLng posicaoAlarme = alarme.getPosition();
+            LatLng posicaoParada = paradaSelecionada.getLocation();
+
+            if (posicaoAlarme.equals(posicaoParada)){
+                statusAlarme.setChecked(true);
+            }
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Esta é a sua parada?")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+        builder.setCustomTitle(title);
+        builder.setView(view);
 
-                        MapsFragment.ativaAlarme();
-
-                        Toast.makeText(getActivity(),"Alarme Ativado!",Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                    }
-                });
-        // Create the AlertDialog object and return it
         return builder.create();
-
-
     }
-
-
-
 }

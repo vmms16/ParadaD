@@ -1,12 +1,16 @@
 package com.example.vinicius.paradad.main;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import com.example.vinicius.paradad.Parada;
@@ -32,7 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback,
-        GoogleMap.OnMapClickListener, LocationListener {
+        GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, LocationListener {
 
     public static GoogleMap mMap;
     private static Sessao sessao = Sessao.getInstancia();
@@ -64,26 +68,39 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setMyLocationEnabled(true);
         mMap.setOnMapClickListener(this);
-
+        mMap.setOnMarkerClickListener(this);
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 5000, 0, this);
 
-        currentPosition = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
+        boolean statusGPS = locationManager.isProviderEnabled(locationManager.GPS_PROVIDER);
 
-        double currentLat = currentPosition.getLatitude();
-        double currentLng = currentPosition.getLongitude();
+        LatLng coordinates;
+        CameraUpdate cameraUpdate;
 
-        LatLng currentCoordinates = new LatLng(currentLat, currentLng);
+        if(statusGPS) {
 
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentCoordinates, 16);
+            currentPosition = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
+
+            double currentLat = currentPosition.getLatitude();
+            double currentLng = currentPosition.getLongitude();
+
+            coordinates = new LatLng(currentLat, currentLng);
+            cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordinates, 16);
+        }
+        else{
+
+            coordinates = new LatLng(-12,-50);
+            cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordinates, 3);
+        }
+
         mMap.moveCamera(cameraUpdate);
-
     }
 
     @Override
@@ -125,9 +142,12 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     @Override
     public void onProviderDisabled(String s) {
 
+        alertaGPSDesativado();
+
     }
 
-    public static void ativaAlarme(){
+    public static void ativaAlarme() {
+
         mMap.clear();
 
         MarkerOptions options = new MarkerOptions();
@@ -140,6 +160,40 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         mMap.addMarker(options);
         alarme = options;
         tipo = TipoNotificacao.proximo;
+    }
+
+    public static void desativaAlarme(){
+
+        mMap.clear();
+        alarme =  null;
+
+    }
+
+    public boolean onMarkerClick(Marker marker){
+
+        LatLng posicao = marker.getPosition();
+        sessao.getParada().setLocation(posicao);
+
+        ConfirmacaoDialogFragment dialog = new ConfirmacaoDialogFragment();
+        dialog.show(getFragmentManager(), "tag_2");
+
+        return true;
+    }
+
+    private void alertaGPSDesativado(){
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+        alertDialog.setTitle("GPS Desativado");
+        alertDialog.setMessage("Você precisa ativar o GPS!");
+        alertDialog.setPositiveButton("Configurações", new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int id){
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        });
+
+        alertDialog.show();
+
     }
 
     public class DownloadJSON extends AsyncTask<LatLng, Void, JSONObject> {
@@ -180,7 +234,6 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         }
 
     }
-
 
     public class DownloadJSONDistance extends AsyncTask<LatLng, Void, Integer> {
 

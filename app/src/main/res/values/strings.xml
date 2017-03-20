@@ -2,6 +2,7 @@
     <string name="app_name">Parada Desce</string>
     <string name="title_activity_maps">Map</string>
     <string name="parada_confirmacao">Esta é a sua parada?</string>
+    <string name="alarme_desativado">Alarme Desativado</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

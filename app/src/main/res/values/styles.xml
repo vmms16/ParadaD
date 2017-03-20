@@ -8,4 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SwitchAlarme" parent="Theme.AppCompat.Light">
+
+        <item name="colorControlActivated">@color/colorPrimaryDark</item>
+
+    </style>
+
 </resources>
